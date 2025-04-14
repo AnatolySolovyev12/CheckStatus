@@ -1,4 +1,4 @@
-#include "ProcessObject.h"
+п»ї#include "ProcessObject.h"
 
 ProcessObject::ProcessObject(QObject* parent)
 	: QObject(parent), classTimer(new QTimer())
@@ -18,7 +18,7 @@ void ProcessObject::setParam(QString name, QString URL, QString updateSecond, bo
 	m_checkParse = checkParse;
 
 	if (m_checkParse)
-		classTimer->start(m_updateSecond.toInt()); // Каждые три секунды
+		classTimer->start(m_updateSecond.toInt()); // РљР°Р¶РґС‹Рµ С‚СЂРё СЃРµРєСѓРЅРґС‹
 	else
 		classTimer->stop();
 }
@@ -32,35 +32,29 @@ void ProcessObject::classTimerIsDone()
 
 void ProcessObject::check()
 {
-	// Принимает snapshot указанных процессов, а также кучи, модули и потоки, используемые этими процессами. 
-	// TH32CS_SNAPPROCESS - Включает все процессы в системе в snapshot.
-	// Если функция завершается успешно, она возвращает открытый дескриптор указанной snapshot.
+	// РџСЂРёРЅРёРјР°РµС‚ snapshot СѓРєР°Р·Р°РЅРЅС‹С… РїСЂРѕС†РµСЃСЃРѕРІ, Р° С‚Р°РєР¶Рµ РєСѓС‡Рё, РјРѕРґСѓР»Рё Рё РїРѕС‚РѕРєРё, РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ СЌС‚РёРјРё РїСЂРѕС†РµСЃСЃР°РјРё. 
+	// TH32CS_SNAPPROCESS - Р’РєР»СЋС‡Р°РµС‚ РІСЃРµ РїСЂРѕС†РµСЃСЃС‹ РІ СЃРёСЃС‚РµРјРµ РІ snapshot.
+	// Р•СЃР»Рё С„СѓРЅРєС†РёСЏ Р·Р°РІРµСЂС€Р°РµС‚СЃСЏ СѓСЃРїРµС€РЅРѕ, РѕРЅР° РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚РєСЂС‹С‚С‹Р№ РґРµСЃРєСЂРёРїС‚РѕСЂ СѓРєР°Р·Р°РЅРЅРѕР№ snapshot.
 
 	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
-	// Если функция завершается сбоем, она возвращает INVALID_HANDLE_VALUE.Дополнительные сведения об ошибке можно получить, вызвав GetLastError.Возможные коды ошибок включают ERROR_BAD_LENGTH.
+	// Р•СЃР»Рё С„СѓРЅРєС†РёСЏ Р·Р°РІРµСЂС€Р°РµС‚СЃСЏ СЃР±РѕРµРј, РѕРЅР° РІРѕР·РІСЂР°С‰Р°РµС‚ INVALID_HANDLE_VALUE.Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЃРІРµРґРµРЅРёСЏ РѕР± РѕС€РёР±РєРµ РјРѕР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ, РІС‹Р·РІР°РІ GetLastError.Р’РѕР·РјРѕР¶РЅС‹Рµ РєРѕРґС‹ РѕС€РёР±РѕРє РІРєР»СЋС‡Р°СЋС‚ ERROR_BAD_LENGTH.
 
 	if (hSnapshot == INVALID_HANDLE_VALUE)
 	{
 		qDebug() << GetLastError();
 	}
-	else
-	{
-		qDebug() << "Correct: " << hSnapshot;
-	}
 
-	PROCESSENTRY32 pe; // Структура PROCESSENTRY32 (tlhelp32.h) описывает запись из списка процессов, находящихся в системном адресном пространстве при snapshot.
+	PROCESSENTRY32 pe; // РЎС‚СЂСѓРєС‚СѓСЂР° PROCESSENTRY32 (tlhelp32.h) РѕРїРёСЃС‹РІР°РµС‚ Р·Р°РїРёСЃСЊ РёР· СЃРїРёСЃРєР° РїСЂРѕС†РµСЃСЃРѕРІ, РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ СЃРёСЃС‚РµРјРЅРѕРј Р°РґСЂРµСЃРЅРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ РїСЂРё snapshot.
 
-	pe.dwSize = sizeof(PROCESSENTRY32); // Размер структуры в байтах. Перед вызовом функции Process32First задайте для этого элемента значение sizeof(PROCESSENTRY32). Если не инициализировать dwSize, process32First завершается сбоем.
+	pe.dwSize = sizeof(PROCESSENTRY32); // Р Р°Р·РјРµСЂ СЃС‚СЂСѓРєС‚СѓСЂС‹ РІ Р±Р°Р№С‚Р°С…. РџРµСЂРµРґ РІС‹Р·РѕРІРѕРј С„СѓРЅРєС†РёРё Process32First Р·Р°РґР°Р№С‚Рµ РґР»СЏ СЌС‚РѕРіРѕ СЌР»РµРјРµРЅС‚Р° Р·РЅР°С‡РµРЅРёРµ sizeof(PROCESSENTRY32). Р•СЃР»Рё РЅРµ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ dwSize, process32First Р·Р°РІРµСЂС€Р°РµС‚СЃСЏ СЃР±РѕРµРј.
 
-	Process32First(hSnapshot, &pe); // Извлекает сведения о первом процессе, обнаруженном в системном snapshot. Обычно это дежурный процесс системы, не нужный в анализе.
+	Process32First(hSnapshot, &pe); // РР·РІР»РµРєР°РµС‚ СЃРІРµРґРµРЅРёСЏ Рѕ РїРµСЂРІРѕРј РїСЂРѕС†РµСЃСЃРµ, РѕР±РЅР°СЂСѓР¶РµРЅРЅРѕРј РІ СЃРёСЃС‚РµРјРЅРѕРј snapshot. РћР±С‹С‡РЅРѕ СЌС‚Рѕ РґРµР¶СѓСЂРЅС‹Р№ РїСЂРѕС†РµСЃСЃ СЃРёСЃС‚РµРјС‹, РЅРµ РЅСѓР¶РЅС‹Р№ РІ Р°РЅР°Р»РёР·Рµ.
 
 	bool OK = false;
 
-	while (Process32Next(hSnapshot, &pe)) // false в случае отсутствия отсутствия модулей процесса т.е. дошли до конца или вообще snapshot пустой
+	while (Process32Next(hSnapshot, &pe)) // false РІ СЃР»СѓС‡Р°Рµ РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РјРѕРґСѓР»РµР№ РїСЂРѕС†РµСЃСЃР° С‚.Рµ. РґРѕС€Р»Рё РґРѕ РєРѕРЅС†Р° РёР»Рё РІРѕРѕР±С‰Рµ snapshot РїСѓСЃС‚РѕР№
 	{
-		//qDebug() << QString::fromWCharArray(pe.szExeFile) << "   " << pe.th32ProcessID;
-
 		if (QString::fromWCharArray(pe.szExeFile) == m_URL)
 		{
 			OK = true;
@@ -68,8 +62,8 @@ void ProcessObject::check()
 	}
 
 	if (!OK)
-		emit messageReceived(m_URL);
-	else
-		qDebug() << m_URL << " OK";
-	//ControlAge.exe
+	{
+		qDebug() << QDateTime::currentDateTime() << ": " << m_URL << " NOT WORK";
+		emit messageReceived("РќРµ СЂР°Р±РѕС‚Р°РµС‚ " + m_URL);
+	}
 }
