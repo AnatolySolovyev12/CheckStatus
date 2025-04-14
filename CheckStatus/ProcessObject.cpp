@@ -59,8 +59,6 @@ void ProcessObject::check()
 
 	while (Process32Next(hSnapshot, &pe)) // false в случае отсутствия отсутствия модулей процесса т.е. дошли до конца или вообще snapshot пустой
 	{
-		//qDebug() << QString::fromWCharArray(pe.szExeFile) << "   " << pe.th32ProcessID;
-
 		if (QString::fromWCharArray(pe.szExeFile) == m_URL)
 		{
 			OK = true;
@@ -71,5 +69,4 @@ void ProcessObject::check()
 		emit messageReceived(m_URL);
 	else
 		qDebug() << m_URL << " OK";
-	//cmake-gui.exe
 }

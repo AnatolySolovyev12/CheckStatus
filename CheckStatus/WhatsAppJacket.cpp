@@ -19,9 +19,7 @@ void WhatsAppJacket::sendMessage(const QString message)
 	QUrl url(urlString);
 
 	QJsonObject json;
-	json["chatId"] = "79825313114@c.us";
-	//json["chatId"] = "120363044487282624@g.us"; // учет
-
+	json["chatId"] = chatId;
 	json["message"] = message; // Используем переданное сообщение
 
 	// Преобразование JSON-объекта в строку
@@ -49,6 +47,4 @@ void WhatsAppJacket::sendMessage(const QString message)
 		}
 		reply->deleteLater();
 		});
-
-	//cmake-gui.exe
 }

@@ -23,10 +23,8 @@ public:
 public slots:
 	void sendMessage(const QString message);
 
-public:
-	QString token = ""; // SolovevAA617AvitoParser
-	const QString chatId = "79825313114@c.us";
-
 private:
 	QNetworkAccessManager* manager = nullptr;
+	const QString chatId = "79825313114@c.us";
+	//const QString chatId = "120363044487282624@g.us";
 };
