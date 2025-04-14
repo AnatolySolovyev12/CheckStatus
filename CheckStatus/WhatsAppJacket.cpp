@@ -1,4 +1,4 @@
-#include "WhatsAppJacket.h"
+ï»¿#include "WhatsAppJacket.h"
 
 WhatsAppJacket::WhatsAppJacket(QObject* parent)
 	: QObject(parent), manager(new QNetworkAccessManager)
@@ -13,27 +13,27 @@ void WhatsAppJacket::sendMessage(const QString message)
 		return;
 	}
 
-	// Ôîðìèðîâàíèå URL çàïðîñà
+	// Ð¤Ð¾Ñ€Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ URL Ð·Ð°Ð¿Ñ€Ð¾ÑÐ°
 	QString urlString = QString("https://1103.api.green-api.com/waInstance1103223344/sendMessage/8f294624f5da41fabeb8a41950bde3b041fe06f7b7034567a9"); // Watcher
 
 	QUrl url(urlString);
 
 	QJsonObject json;
 	json["chatId"] = chatId;
-	json["message"] = message; // Èñïîëüçóåì ïåðåäàííîå ñîîáùåíèå
+	json["message"] = message; // Ð˜ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÐ¼ Ð¿ÐµÑ€ÐµÐ´Ð°Ð½Ð½Ð¾Ðµ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ
 
-	// Ïðåîáðàçîâàíèå JSON-îáúåêòà â ñòðîêó
+	// ÐŸÑ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ JSON-Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ð² ÑÑ‚Ñ€Ð¾ÐºÑƒ
 	QJsonDocument jsonDoc(json);
 	QByteArray jsonData = jsonDoc.toJson();
 
-	// Ñîçäàíèå çàïðîñà
+	// Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð·Ð°Ð¿Ñ€Ð¾ÑÐ°
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-	// Îòïðàâêà çàïðîñà
+	// ÐžÑ‚Ð¿Ñ€Ð°Ð²ÐºÐ° Ð·Ð°Ð¿Ñ€Ð¾ÑÐ°
 	QNetworkReply* reply = manager->post(request, jsonData);
 
-	// Îáðàáîò÷èê îòâåòà (åñëè íåîáõîäèìî). Ïðèãîäèòñÿ.
+	// ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸Ðº Ð¾Ñ‚Ð²ÐµÑ‚Ð° (ÐµÑÐ»Ð¸ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾). ÐŸÑ€Ð¸Ð³Ð¾Ð´Ð¸Ñ‚ÑÑ.
 	QObject::connect(reply, &QNetworkReply::finished, [reply]() {
 
 		if (reply->error() == QNetworkReply::NoError)
