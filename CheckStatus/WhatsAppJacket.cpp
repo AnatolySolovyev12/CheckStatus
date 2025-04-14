@@ -33,10 +33,10 @@ void WhatsAppJacket::sendMessage(const QString message)
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
 	// Отправка запроса
-	manager->post(request, jsonData);
+	QNetworkReply* reply = manager->post(request, jsonData);
 
 	// Обработчик ответа (если необходимо). Пригодится.
-	QObject::connect(manager, &QNetworkAccessManager::finished, [](QNetworkReply* reply) {
+	QObject::connect(reply, &QNetworkReply::finished, [reply]() {
 
 		if (reply->error() == QNetworkReply::NoError)
 		{
@@ -49,4 +49,6 @@ void WhatsAppJacket::sendMessage(const QString message)
 		}
 		reply->deleteLater();
 		});
+
+	//cmake-gui.exe
 }

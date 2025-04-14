@@ -71,5 +71,5 @@ void ProcessObject::check()
 		emit messageReceived(m_URL);
 	else
 		qDebug() << m_URL << " OK";
-	//ControlAge.exe
+	//cmake-gui.exe
 }
