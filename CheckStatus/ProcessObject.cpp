@@ -44,10 +44,6 @@ void ProcessObject::check()
 	{
 		qDebug() << GetLastError();
 	}
-	else
-	{
-		qDebug() << "Correct: " << hSnapshot;
-	}
 
 	PROCESSENTRY32 pe; // Структура PROCESSENTRY32 (tlhelp32.h) описывает запись из списка процессов, находящихся в системном адресном пространстве при snapshot.
 
@@ -66,7 +62,8 @@ void ProcessObject::check()
 	}
 
 	if (!OK)
+	{
+		qDebug() << QDateTime::currentDateTime() << ": " << m_URL << " NOT WORK";
 		emit messageReceived(m_URL);
-	else
-		qDebug() << m_URL << " OK";
+	}
 }

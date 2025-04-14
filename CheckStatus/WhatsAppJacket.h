@@ -25,6 +25,6 @@ public slots:
 
 private:
 	QNetworkAccessManager* manager = nullptr;
-	const QString chatId = "79825313114@c.us";
-	//const QString chatId = "120363044487282624@g.us";
+	//const QString chatId = "79825313114@c.us";
+	const QString chatId = "120363044487282624@g.us";
 };
