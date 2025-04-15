@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>617</width>
-    <height>505</height>
+    <width>746</width>
+    <height>513</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,7 +96,7 @@
      <rect>
       <x>60</x>
       <y>0</y>
-      <width>521</width>
+      <width>661</width>
       <height>441</height>
      </rect>
     </property>
@@ -120,12 +120,12 @@
     </property>
     <column>
      <property name="text">
-      <string>Name</string>
+      <string>Name (.exe)</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Reference</string>
+      <string>Directory</string>
      </property>
     </column>
     <column>
@@ -187,7 +187,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>617</width>
+     <width>746</width>
      <height>22</height>
     </rect>
    </property>

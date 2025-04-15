@@ -51,20 +51,45 @@ void ProcessObject::check()
 
 	Process32First(hSnapshot, &pe); // Извлекает сведения о первом процессе, обнаруженном в системном snapshot. Обычно это дежурный процесс системы, не нужный в анализе.
 
-	bool OK = false;
-
 	while (Process32Next(hSnapshot, &pe)) // false в случае отсутствия отсутствия модулей процесса т.е. дошли до конца или вообще snapshot пустой
 	{
-		if (QString::fromWCharArray(pe.szExeFile) == m_URL)
+		if (QString::fromWCharArray(pe.szExeFile) == m_name)
 		{
-			OK = true;
-			qDebug() << QDateTime::currentDateTime() << ": " << m_URL << "OK";
+			qDebug() << QDateTime::currentDateTime() << ": " << m_name << "OK";
+			return;
 		}
 	}
 
-	if (!OK)
+	qDebug() << QDateTime::currentDateTime() << ": " << m_name << " NOT WORK";
+	emit messageReceived("Не работает " + m_name);
+
+	QString temporary = getStartString(m_URL);
+
+	QTimer::singleShot(1000, [temporary]() {
+
+		system(temporary.toUtf8().constData());
+
+		});
+}
+
+
+QString ProcessObject::getStartString(QString any)
+{
+	QString temporary = "start \"\" \""; // start - для того чтобы system() не блокировала выполнение запускающей программы.
+	//Параметр "" используется для указания заголовка окна (можно оставить пустым).
+
+	for (auto& val : any)
 	{
-		qDebug() << QDateTime::currentDateTime() << ": " << m_URL << " NOT WORK";
-		emit messageReceived("Не работает " + m_URL);
+		if (val == '\\')
+		{
+			temporary += "\\";
+			continue;
+		};
+		temporary += val;
 	}
+
+	temporary += "\\";
+	temporary += m_name + "\"";
+
+	return temporary;
 }
