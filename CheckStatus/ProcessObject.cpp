@@ -72,6 +72,7 @@ void ProcessObject::check()
 		});
 }
 
+
 QString ProcessObject::getStartString(QString any)
 {
 	QString temporary = "start \"\" \""; // start - для того чтобы system() не блокировала выполнение запускающей программы.
