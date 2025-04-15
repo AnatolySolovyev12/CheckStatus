@@ -65,6 +65,17 @@ void ProcessObject::check()
 	if (!OK)
 	{
 		qDebug() << QDateTime::currentDateTime() << ": " << m_URL << " NOT WORK";
-		emit messageReceived("Не работает " + m_URL);
+		//emit messageReceived("Не работает " + m_URL);
+		//QString temporary = "start " + m_URL;
+		//QString temporary = "\"C:\\Program Files\\SQLiteStudio\\SQLiteStudio.exe\"";
+
+		QString temp2 = "SQLiteStudio.exe";
+		QString temporary = "\"C:\\Program Files\\SQLiteStudio\\" + temp2 + "\"";
+
+		QTimer::singleShot(5000, [temporary]() {
+
+			system(temporary.toUtf8().constData());
+
+			});
 	}
 }
