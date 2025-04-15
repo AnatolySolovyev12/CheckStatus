@@ -58,6 +58,7 @@ void ProcessObject::check()
 		if (QString::fromWCharArray(pe.szExeFile) == m_URL)
 		{
 			OK = true;
+			qDebug() << QDateTime::currentDateTime() << ": " << m_URL << "OK";
 		}
 	}
 
