@@ -11,5 +11,6 @@ int main(int argc, char *argv[])
 	w.setWindowIcon(QIcon("icon.png"));
 	w.setWindowTitle("CheckStatus by Solovev");
     w.show();
+
     return a.exec();
 }

@@ -55,27 +55,49 @@ void ProcessObject::check()
 
 	while (Process32Next(hSnapshot, &pe)) // false в случае отсутствия отсутствия модулей процесса т.е. дошли до конца или вообще snapshot пустой
 	{
-		if (QString::fromWCharArray(pe.szExeFile) == m_URL)
+		if (QString::fromWCharArray(pe.szExeFile) == m_name)
 		{
 			OK = true;
-			qDebug() << QDateTime::currentDateTime() << ": " << m_URL << "OK";
+			qDebug() << QDateTime::currentDateTime() << ": " << m_name << "OK";
 		}
 	}
 
 	if (!OK)
 	{
-		qDebug() << QDateTime::currentDateTime() << ": " << m_URL << " NOT WORK";
+		qDebug() << QDateTime::currentDateTime() << ": " << m_name << " NOT WORK";
 		//emit messageReceived("Не работает " + m_URL);
-		//QString temporary = "start " + m_URL;
-		//QString temporary = "\"C:\\Program Files\\SQLiteStudio\\SQLiteStudio.exe\"";
 
-		QString temp2 = "SQLiteStudio.exe";
-		QString temporary = "\"C:\\Program Files\\SQLiteStudio\\" + temp2 + "\"";
+		//QString temporary = "\"C:\\Program Files\\SQLabs\\\SQLiteManager\\SQLiteManager.exe\"";
 
-		QTimer::singleShot(5000, [temporary]() {
+		QString temporary = getStartString(m_URL);
+
+		qDebug() << temporary;
+
+		QTimer::singleShot(1000, [temporary]() {
 
 			system(temporary.toUtf8().constData());
 
 			});
 	}
+}
+
+QString ProcessObject::getStartString(QString any)
+{
+	QString temporary = "start \"\" \""; // start - для того чтобы system() не блокировала выполнение запускающей программы.
+	//Параметр "" используется для указания заголовка окна (можно оставить пустым).
+
+	for (auto& val : any)
+	{
+		if (val == '\\')
+		{
+			temporary += "\\";
+			continue;
+		};
+		temporary += val;
+	}
+
+	temporary += "\\";
+	temporary += m_name + "\"";
+
+	return temporary;
 }

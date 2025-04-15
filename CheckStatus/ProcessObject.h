@@ -17,6 +17,7 @@ public:
 
 	void setParam(QString name, QString URL, QString updateSecond, bool checkParse);
 	void check();
+	QString getStartString(QString any);
 
 signals:
 	void messageReceived(const QString&);
