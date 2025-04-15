@@ -65,7 +65,7 @@ void ProcessObject::check()
 
 	QString temporary = getStartString(m_URL);
 
-	QTimer::singleShot(1000, [temporary]() {
+	QTimer::singleShot(5000, [temporary]() {
 
 		system(temporary.toUtf8().constData());
 
