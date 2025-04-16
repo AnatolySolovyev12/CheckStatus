@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Add new parse object</string>
+     <string>Add new control object</string>
     </property>
     <property name="text">
      <string>+</string>
@@ -53,7 +53,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Delete chised parse object</string>
+     <string>Delete choised control object</string>
     </property>
     <property name="text">
      <string>-</string>
@@ -85,7 +85,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Refresh parse parameters for parse object</string>
+     <string>Refresh control parameters for control object</string>
     </property>
     <property name="text">
      <string>Rf</string>
@@ -135,7 +135,12 @@
     </column>
     <column>
      <property name="text">
-      <string>Active</string>
+      <string>Check active</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Send messege</string>
      </property>
     </column>
    </widget>
