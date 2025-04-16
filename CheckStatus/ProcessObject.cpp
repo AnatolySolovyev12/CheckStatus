@@ -10,14 +10,15 @@ ProcessObject::ProcessObject(QObject* parent)
 }
 
 
-void ProcessObject::setParam(QString name, QString URL, QString updateSecond, bool checkParse)
+void ProcessObject::setParam(QString name, QString URL, QString updateSecond, bool checkParse, bool checkSend)
 {
 	m_name = name;
 	m_URL = URL;
 	m_updateSecond = updateSecond;
 	m_checkParse = checkParse;
+	m_checkSend = checkSend;
 
-	if (m_checkParse)
+	if (m_checkParse || m_checkSend)
 		classTimer->start(m_updateSecond.toInt()); // Каждые три секунды
 	else
 		classTimer->stop();
@@ -61,15 +62,18 @@ void ProcessObject::check()
 	}
 
 	qDebug() << QDateTime::currentDateTime() << ": " << m_name << " NOT WORK";
-	emit messageReceived("Не работает " + m_name);
+
+	if (m_checkSend)
+		emit messageReceived("Не работает " + m_name);
 
 	QString temporary = getStartString(m_URL);
 
-	QTimer::singleShot(5000, [temporary]() {
+	if (m_checkParse)
+		QTimer::singleShot(5000, [temporary]() {
 
 		system(temporary.toUtf8().constData());
 
-		});
+			});
 }
 
 

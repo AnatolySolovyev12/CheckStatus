@@ -135,7 +135,12 @@
     </column>
     <column>
      <property name="text">
-      <string>Active</string>
+      <string>Check active</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Send messege</string>
      </property>
     </column>
    </widget>
