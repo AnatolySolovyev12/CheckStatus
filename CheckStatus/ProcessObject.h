@@ -15,7 +15,7 @@ class ProcessObject : public QObject
 public:
 	ProcessObject(QObject* parent = nullptr);
 
-	void setParam(QString name, QString URL, QString updateSecond, bool checkParse);
+	void setParam(QString name, QString URL, QString updateSecond, bool checkParse, bool checkSend);
 	void check();
 	QString getStartString(QString any);
 
@@ -30,5 +30,6 @@ private:
 	QString m_URL;
 	QString m_updateSecond;
 	bool m_checkParse = false;
+	bool m_checkSend = false;
 	QTimer* classTimer = nullptr;
 };

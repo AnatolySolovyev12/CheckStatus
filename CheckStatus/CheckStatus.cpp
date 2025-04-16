@@ -70,12 +70,13 @@ void CheckStatus::addItemInList()
 	any->setBackground(1, QColor(245, 216, 183, 255));
 	any->setBackground(2, QColor(217, 225, 187, 255));
 	any->setCheckState(3, any->checkState(3));
+	any->setCheckState(4, any->checkState(4));
 
 	offChanger = false;
 
 	poolParse.append(QSharedPointer<ProcessObject>::create());
 	//poolParse.push_back(QSharedPointer<uniqueParseObject>(new uniqueParseObject));
-	poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(0), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(1), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(2), ui.treeWidget->topLevelItem(poolParse.length() - 1)->checkState(3));
+	poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(0), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(1), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(2), ui.treeWidget->topLevelItem(poolParse.length() - 1)->checkState(3), ui.treeWidget->topLevelItem(poolParse.length() - 1)->checkState(4));
 
 	connect(poolParse.last().data(), &ProcessObject::messageReceived, tgObject, &WhatsAppJacket::sendMessage);
 
@@ -98,7 +99,7 @@ void CheckStatus::setData() // в случае двойного клика в €чейку открываем редакт
 	QTreeWidgetItem* any = ui.treeWidget->currentItem(); // присваиваем указателю выбранную €чейку
 	int column = ui.treeWidget->currentColumn(); // присваиваем переменной номер текущего столбца (отсчЄт начинаетс€ с 0-ого)
 
-	if (column == 3) return; // не даЄм редактировать дальше третьего столбца            
+	if (column == 3 || column == 4) return; // не даЄм редактировать дальше третьего столбца            
 
 	//qDebug() << "OPEN EDITOR";
 
@@ -120,6 +121,7 @@ void CheckStatus::closeEditor(QTreeWidgetItem* any) // слот закрыти€ редактора в
 	offChanger = true;
 
 	any->setCheckState(3, any->checkState(3));
+	any->setCheckState(4, any->checkState(4));
 
 	if (any->text(2).toInt() < 10000) // красим если что-то написано в серийнике
 	{
@@ -133,6 +135,15 @@ void CheckStatus::closeEditor(QTreeWidgetItem* any) // слот закрыти€ редактора в
 	else
 	{
 		any->setBackground(3, QColor(128, 243, 150, 255));
+	}
+
+	if (any->checkState(4) == Qt::Unchecked) // красим если что-то написано в серийнике
+	{
+		any->setBackground(4, QColor("white"));
+	}
+	else
+	{
+		any->setBackground(4, QColor(128, 243, 150, 255));
 	}
 
 	offChanger = false;
@@ -202,16 +213,21 @@ void CheckStatus::recursionXmlWriter(QTreeWidgetItem* some, QXmlStreamWriter& so
 
 		someXmlWriter.writeAttribute("Name", some->text(0)); // присваиваем атрибуты внутри открытого первого элемента  
 
-		someXmlWriter.writeAttribute("Reference", some->text(1));
+		someXmlWriter.writeAttribute("Directory", some->text(1));
 
 		someXmlWriter.writeAttribute("Update", some->text(2));
 
 		if (some->text(2) != nullptr)
 		{
 			if (some->checkState(3) == Qt::Unchecked)
-				someXmlWriter.writeAttribute("Active", "0");
+				someXmlWriter.writeAttribute("Check", "0");
 			else
-				someXmlWriter.writeAttribute("Active", "1");
+				someXmlWriter.writeAttribute("Check", "1");
+
+			if (some->checkState(4) == Qt::Unchecked)
+				someXmlWriter.writeAttribute("Send", "0");
+			else
+				someXmlWriter.writeAttribute("Send", "1");
 		}
 
 		int count = some->childCount();
@@ -229,16 +245,21 @@ void CheckStatus::recursionXmlWriter(QTreeWidgetItem* some, QXmlStreamWriter& so
 
 		someXmlWriter.writeAttribute("Name", some->text(0)); // присваиваем атрибуты внутри открытого первого элемента   
 
-		someXmlWriter.writeAttribute("Reference", some->text(1)); //
+		someXmlWriter.writeAttribute("Directory", some->text(1)); //
 
 		someXmlWriter.writeAttribute("Update", some->text(2));
 
 		if (some->text(2) != nullptr)
 		{
 			if (some->checkState(3) == Qt::Unchecked)
-				someXmlWriter.writeAttribute("Active", "0");
+				someXmlWriter.writeAttribute("Check", "0");
 			else
-				someXmlWriter.writeAttribute("Active", "1");
+				someXmlWriter.writeAttribute("Check", "1");
+
+			if (some->checkState(4) == Qt::Unchecked)
+				someXmlWriter.writeAttribute("Send", "0");
+			else
+				someXmlWriter.writeAttribute("Send", "1");
 		}
 
 		someXmlWriter.writeEndElement();
@@ -326,16 +347,24 @@ void CheckStatus::loopXmlReader(QXmlStreamReader& xmlReader)
 			{
 				if (val.name().toString() == "Name") some->setText(0, val.value().toString());
 
-				if (val.name().toString() == "Reference") some->setText(1, val.value().toString());
+				if (val.name().toString() == "Directory") some->setText(1, val.value().toString());
 
 				if (val.name().toString() == "Update") some->setText(2, val.value().toString());
 
-				if (val.name().toString() == "Active")
+				if (val.name().toString() == "Check")
 				{
 					if (val.value().toString() == "1")
 						some->setCheckState(3, Qt::Checked);
 					else
 						some->setCheckState(3, Qt::Unchecked);
+				}
+
+				if (val.name().toString() == "Send")
+				{
+					if (val.value().toString() == "1")
+						some->setCheckState(4, Qt::Checked);
+					else
+						some->setCheckState(4, Qt::Unchecked);
 				}
 			}
 
@@ -418,7 +447,7 @@ void CheckStatus::initializationPoolFunc()
 
 		poolParse.append(QSharedPointer<ProcessObject>::create());
 
-		poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(count)->text(0), ui.treeWidget->topLevelItem(count)->text(1), ui.treeWidget->topLevelItem(count)->text(2), ui.treeWidget->topLevelItem(count)->checkState(3));
+		poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(count)->text(0), ui.treeWidget->topLevelItem(count)->text(1), ui.treeWidget->topLevelItem(count)->text(2), ui.treeWidget->topLevelItem(count)->checkState(3), ui.treeWidget->topLevelItem(count)->checkState(4));
 
 		connect(poolParse.last().data(), &ProcessObject::messageReceived, tgObject, &WhatsAppJacket::sendMessage);
 	}
