@@ -1,4 +1,4 @@
-﻿#include "FlameDate.h"
+﻿#include "CheckStatus.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     CheckStatus w;
 
 	w.setWindowIcon(QIcon("icon.png"));
-	w.setWindowTitle("FlameDate by Solovev");
+	w.setWindowTitle("CheckStatus by Solovev");
     w.show();
 
     return a.exec();
