@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QUrlQuery>
 #include <windows.h>
+#include <QFile.h>
 
 
 class WhatsAppJacket : public QObject
@@ -19,12 +20,14 @@ class WhatsAppJacket : public QObject
 
 public:
 	WhatsAppJacket(QObject* parent = nullptr);
+	QString getTokenFromFile();
+	QString getChatIdFromFile();
 
 public slots:
 	void sendMessage(const QString message);
 
 private:
 	QNetworkAccessManager* manager = nullptr;
-	//const QString chatId = "79825313114@c.us";
-	const QString chatId = "120363044487282624@g.us";
+	QString chatId = "";
+	QString urlString = "";
 };
