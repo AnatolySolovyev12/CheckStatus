@@ -373,7 +373,7 @@ void CheckStatus::loopXmlReader(QXmlStreamReader& xmlReader)
 			CheckStatus::closeEditor(some);
 		}
 
-		if (xmlReader.isEndElement())
+		if (xmlReader.isEndElement() && !myList.isEmpty())
 			myList.pop_back();
 
 		countOfTopItems = ui.treeWidget->topLevelItemCount();
