@@ -1,4 +1,4 @@
-﻿#include "FlameDate.h"
+﻿#include "CheckStatus.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
