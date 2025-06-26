@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qapplication.h>
 #include <QObject>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>

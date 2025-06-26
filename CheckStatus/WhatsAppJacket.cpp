@@ -50,7 +50,7 @@ void WhatsAppJacket::sendMessage(const QString message)
 
 QString WhatsAppJacket::getTokenFromFile()
 {
-	QFile file("token.txt");
+	QFile file(QCoreApplication::applicationDirPath() + "\\token.txt");
 
 	if (!file.open(QIODevice::ReadOnly))
 	{
@@ -76,7 +76,7 @@ QString WhatsAppJacket::getTokenFromFile()
 
 QString WhatsAppJacket::getChatIdFromFile()
 {
-	QFile file("chatId.txt");
+	QFile file(QCoreApplication::applicationDirPath() + "\\chatId.txt");
 
 	if (!file.open(QIODevice::ReadOnly))
 	{

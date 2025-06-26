@@ -289,7 +289,7 @@ void CheckStatus::importXml()
 
 	file.close();
 
-	QFile txtFile("tree.txt");
+	QFile txtFile(QCoreApplication::applicationDirPath() + "\\tree.txt");
 
 	if (!(txtFile.open(QIODevice::WriteOnly | QIODevice::Truncate))) // Truncate - для очистки содержимого файла
 	{
@@ -385,7 +385,7 @@ void CheckStatus::startingImportXml()
 {
 	/* Открываем файл для Чтения с помощью пути, указанного в lineEditWrite */
 
-	QFile file("tree.txt");
+	QFile file(QCoreApplication::applicationDirPath() + "\\tree.txt");
 
 	if (!file.open(QIODevice::ReadOnly))
 	{
