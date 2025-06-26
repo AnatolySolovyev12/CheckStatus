@@ -4,6 +4,8 @@ WhatsAppJacket::WhatsAppJacket(QObject* parent)
 	: QObject(parent), manager(new QNetworkAccessManager)
 {
 	AttachConsole(ATTACH_PARENT_PROCESS);
+	urlString = QString(getTokenFromFile());
+	chatId = getChatIdFromFile();
 }
 
 void WhatsAppJacket::sendMessage(const QString message)
@@ -12,9 +14,6 @@ void WhatsAppJacket::sendMessage(const QString message)
 		qWarning() << "Attempt to send empty message";
 		return;
 	}
-
-	// Формирование URL запроса
-	QString urlString = QString("https://1103.api.green-api.com/waInstance1103223344/sendMessage/8f294624f5da41fabeb8a41950bde3b041fe06f7b7034567a9"); // Watcher
 
 	QUrl url(urlString);
 
@@ -47,4 +46,56 @@ void WhatsAppJacket::sendMessage(const QString message)
 		}
 		reply->deleteLater();
 		});
+}
+
+QString WhatsAppJacket::getTokenFromFile()
+{
+	QFile file("token.txt");
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		qDebug() << "Don't find browse file. Add a directory with a token (token.txt).";
+		return 0;
+	}
+
+	QTextStream out(&file);
+
+	QString myLine = out.readLine(); // метод readLine() считывает одну строку из потока
+
+	if (myLine == "")
+	{
+		qDebug() << "Don't find browse file. Add a directory with a token (token.txt).";
+		file.close();
+		return 0;
+	}
+
+	file.close();
+
+	return myLine;
+}
+
+QString WhatsAppJacket::getChatIdFromFile()
+{
+	QFile file("chatId.txt");
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		qDebug() << "Don't find browse file. Add a directory with a token (chatId.txt).";
+		return 0;
+	}
+
+	QTextStream out(&file);
+
+	QString myLine = out.readLine(); // метод readLine() считывает одну строку из потока
+
+	if (myLine == "")
+	{
+		qDebug() << "Don't find browse file. Add a directory with a token (chatId.txt).";
+		file.close();
+		return 0;
+	}
+
+	file.close();
+
+	return myLine;
 }
