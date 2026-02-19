@@ -45,6 +45,8 @@ public:
     void cmdOpen();
     void cmdClose();
 
+    void sendAllHistory();
+
 private:
     Ui::CheckStatusClass ui;
     bool offChanger = false;

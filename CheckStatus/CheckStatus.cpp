@@ -33,10 +33,12 @@ CheckStatus::CheckStatus(QWidget* parent)
 	connect(ui.pushButtonImport, &QPushButton::clicked, this, &CheckStatus::importXml);
 	connect(ui.pushButtonRefresh, &QPushButton::clicked, this, &CheckStatus::initializationPoolFunc);
 
+	connect(ui.historyButton, &QPushButton::clicked, this, &CheckStatus::sendAllHistory);
+
 	QMainWindow::setStatusBar(sBar);
 
 	startingImportXml();
-	initializationPoolFunc();
+	initializationPoolFunc(); 
 }
 
 
@@ -487,4 +489,26 @@ void CheckStatus::cmdClose()
 	qDebug() << "\nProgramm disconnect from console.";
 
 	FreeConsole(); // Отделяем процесс от cmd. После cmd закрываем руками.
+}
+
+
+
+void CheckStatus::sendAllHistory()
+{
+	QString tempStringForHistiory;
+
+	if (poolParse.isEmpty()) 
+		tgObject->sendMessage("Not found object for control");
+
+	for (auto& val : poolParse)
+	{
+		tempStringForHistiory += val.data()->getNameObject();
+		tempStringForHistiory += '\n';
+		//QString temp = val.data()->getHistoryObject();
+		//qDebug() << temp;
+		val.data()->getHistoryObject() == "" ? tempStringForHistiory += "History is empty\n" : tempStringForHistiory += val.data()->getHistoryObject();
+		tempStringForHistiory += '\n';
+	}
+
+	tgObject->sendMessage(tempStringForHistiory);
 }

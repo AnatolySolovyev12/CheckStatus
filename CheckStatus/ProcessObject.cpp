@@ -66,6 +66,8 @@ void ProcessObject::check()
 	if (m_checkSend)
 		emit messageReceived("Не работает " + m_name);
 
+	historyOfObject += QDateTime::currentDateTime().toString() + '\n';
+
 	QString temporary = getStartString(m_URL);
 
 	if (m_checkParse)
@@ -96,4 +98,18 @@ QString ProcessObject::getStartString(QString any)
 	temporary += m_name + "\"";
 
 	return temporary;
+}
+
+
+
+QString ProcessObject::getHistoryObject()
+{
+	return historyOfObject;
+}
+
+
+
+QString ProcessObject::getNameObject()
+{
+	return m_name;
 }

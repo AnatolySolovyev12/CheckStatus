@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <windows.h>
 #include <tlhelp32.h>
+#include <qdatetime.h>
 
 
 class ProcessObject : public QObject
@@ -18,6 +19,8 @@ public:
 	void setParam(QString name, QString URL, QString updateSecond, bool checkParse, bool checkSend);
 	void check();
 	QString getStartString(QString any);
+	QString getHistoryObject();
+	QString getNameObject();
 
 signals:
 	void messageReceived(const QString&);
@@ -32,4 +35,5 @@ private:
 	bool m_checkParse = false;
 	bool m_checkSend = false;
 	QTimer* classTimer = nullptr;
+	QString historyOfObject;
 };
