@@ -504,8 +504,6 @@ void CheckStatus::sendAllHistory()
 	{
 		tempStringForHistiory += val.data()->getNameObject();
 		tempStringForHistiory += '\n';
-		//QString temp = val.data()->getHistoryObject();
-		//qDebug() << temp;
 		val.data()->getHistoryObject() == "" ? tempStringForHistiory += "History is empty\n" : tempStringForHistiory += val.data()->getHistoryObject();
 		tempStringForHistiory += '\n';
 	}
