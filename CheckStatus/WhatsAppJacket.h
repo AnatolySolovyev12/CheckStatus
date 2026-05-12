@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <qapplication.h>
 #include <QObject>
@@ -23,6 +23,13 @@ public:
 	WhatsAppJacket(QObject* parent = nullptr);
 	QString getTokenFromFile();
 	QString getChatIdFromFile();
+	void getLastMessageAsync();
+	void deleteNotification(QString idNotification);
+
+signals:
+	void lastMessageReceived(QPair<QString, QString>);
+	void sendIdNotificationForDelete(QString id);
+
 
 public slots:
 	void sendMessage(const QString message);
@@ -31,4 +38,5 @@ private:
 	QNetworkAccessManager* manager = nullptr;
 	QString chatId = "";
 	QString urlString = "";
+	bool isBusy = false;
 };

@@ -196,7 +196,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Refresh control parameters for control object</string>
+     <string>Send history for all tasks in MAX</string>
     </property>
     <property name="text">
      <string>Hi</string>

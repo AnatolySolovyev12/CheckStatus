@@ -6,7 +6,13 @@ WhatsAppJacket::WhatsAppJacket(QObject* parent)
 	AttachConsole(ATTACH_PARENT_PROCESS);
 	urlString = QString(getTokenFromFile());
 	chatId = getChatIdFromFile();
+
+	connect(this, &WhatsAppJacket::sendIdNotificationForDelete, this, &WhatsAppJacket::deleteNotification);
+
+	QTimer::singleShot(2000, [this]() { getLastMessageAsync(); });
 }
+
+
 
 void WhatsAppJacket::sendMessage(const QString message)
 {
@@ -48,6 +54,8 @@ void WhatsAppJacket::sendMessage(const QString message)
 		});
 }
 
+
+
 QString WhatsAppJacket::getTokenFromFile()
 {
 	QFile file(QCoreApplication::applicationDirPath() + "\\token.txt");
@@ -74,6 +82,8 @@ QString WhatsAppJacket::getTokenFromFile()
 	return myLine;
 }
 
+
+
 QString WhatsAppJacket::getChatIdFromFile()
 {
 	QFile file(QCoreApplication::applicationDirPath() + "\\chatId.txt");
@@ -98,4 +108,96 @@ QString WhatsAppJacket::getChatIdFromFile()
 	file.close();
 
 	return myLine;
+}
+
+
+
+void WhatsAppJacket::getLastMessageAsync()
+{
+	if (isBusy) return;
+	isBusy = true;
+	QString urlStringTemp = QString("https://3100.api.green-api.com/waInstance3100514553/receiveNotification/134edc19c6c64e4f971e4578b787f54725492643c588466095");
+
+	QUrl url(urlStringTemp);
+
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QNetworkReply* reply = manager->get(request);
+
+	QObject::connect(reply, &QNetworkReply::finished, [this, reply]() {
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			QByteArray responseData = reply->readAll();
+			QJsonDocument responseDoc = QJsonDocument::fromJson(responseData);
+
+			if (!responseDoc.isNull())
+			{
+				qDebug() << "receiptId: " << responseDoc["receiptId"].toInt();
+
+				QJsonObject objBody = responseDoc["body"].toObject();
+				QJsonObject objMessage = objBody["messageData"].toObject();
+				QJsonObject objText = objMessage["textMessageData"].toObject();
+
+				qDebug() << "text: " << objText["textMessage"].toString();
+
+				QJsonObject objId = objBody["senderData"].toObject();
+
+				qDebug() << "chatId: " << objId["chatId"].toString();
+
+				emit sendIdNotificationForDelete(QString::number(responseDoc["receiptId"].toInt()));
+				emit lastMessageReceived(qMakePair<QString, QString>(objId["chatId"].toString(), objText["textMessage"].toString()));
+			}
+			else
+				qDebug() << "Not array or null";
+		}
+		else
+			qDebug() << "Error:" << reply->errorString();
+
+		reply->deleteLater();
+		isBusy = false;
+
+		// Самовызов через 5 секунд
+		QTimer::singleShot(5000, this, &WhatsAppJacket::getLastMessageAsync);
+		});
+}
+
+
+
+void WhatsAppJacket::deleteNotification(QString idNotification)
+{
+	QString urlStringTemp = QString("https://3100.api.green-api.com/waInstance3100514553/deleteNotification/134edc19c6c64e4f971e4578b787f54725492643c588466095/");
+
+	urlStringTemp += idNotification;
+
+	QUrl url(urlStringTemp);
+
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QNetworkReply* reply = manager->deleteResource(request);
+
+	QObject::connect(reply, &QNetworkReply::finished, [this, reply]() {
+
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			QByteArray responseData = reply->readAll();
+			QJsonDocument responseDoc = QJsonDocument::fromJson(responseData);
+
+			if (!responseDoc.isNull())
+			{
+				if (!responseDoc["result"].toBool())
+					qDebug() << responseDoc["reason"].toString();
+				else
+					qDebug() << "Notification was delete";
+			}
+			else
+				qDebug() << "Not array or null";
+		}
+		else
+			qDebug() << "Error:" << reply->errorString();
+
+		reply->deleteLater();
+		}
+	);
 }
