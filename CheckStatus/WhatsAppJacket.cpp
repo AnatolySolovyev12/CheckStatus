@@ -149,7 +149,6 @@ void WhatsAppJacket::getLastMessageAsync()
 				emit lastMessageReceived(qMakePair<QString, QString>(objId["chatId"].toString(), objText["textMessage"].toString()));
 			}
 			else
-				//qDebug() << "Not array or null";
 				std::cout << "\r" << QDate::currentDate().toString().toStdString() << "   " << QTime::currentTime().toString().toStdString();
 		}
 		else
