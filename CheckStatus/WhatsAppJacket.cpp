@@ -146,7 +146,12 @@ void WhatsAppJacket::getLastMessageAsync()
 				qDebug() << "chatId: " << objId["chatId"].toString();
 
 				emit sendIdNotificationForDelete(QString::number(responseDoc["receiptId"].toInt()));
-				emit lastMessageReceived(qMakePair<QString, QString>(objId["chatId"].toString(), objText["textMessage"].toString()));
+
+				if (objBody["typeWebhook"].toString() != "outgoingAPIMessageReceived")
+				{
+					qDebug() << "Send messege...";
+					emit lastMessageReceived(qMakePair<QString, QString>(objId["chatId"].toString(), objText["textMessage"].toString()));
+				}
 			}
 			else
 				std::cout << "\r" << QDate::currentDate().toString().toStdString() << "   " << QTime::currentTime().toString().toStdString();

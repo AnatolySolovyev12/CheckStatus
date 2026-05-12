@@ -31,7 +31,6 @@ signals:
 	void lastMessageReceived(QPair<QString, QString>);
 	void sendIdNotificationForDelete(QString id);
 
-
 public slots:
 	void sendMessage(const QString message);
 
