@@ -13,6 +13,7 @@
 #include <QUrlQuery>
 #include <windows.h>
 #include <QFile.h>
+#include <iostream>
 
 
 class WhatsAppJacket : public QObject

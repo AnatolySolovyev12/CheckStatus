@@ -133,7 +133,7 @@ void WhatsAppJacket::getLastMessageAsync()
 
 			if (!responseDoc.isNull())
 			{
-				qDebug() << "receiptId: " << responseDoc["receiptId"].toInt();
+				qDebug() << "\nreceiptId: " << responseDoc["receiptId"].toInt();
 
 				QJsonObject objBody = responseDoc["body"].toObject();
 				QJsonObject objMessage = objBody["messageData"].toObject();
@@ -149,7 +149,8 @@ void WhatsAppJacket::getLastMessageAsync()
 				emit lastMessageReceived(qMakePair<QString, QString>(objId["chatId"].toString(), objText["textMessage"].toString()));
 			}
 			else
-				qDebug() << "Not array or null";
+				//qDebug() << "Not array or null";
+				std::cout << "\r" << QDate::currentDate().toString().toStdString() << "   " << QTime::currentTime().toString().toStdString();
 		}
 		else
 			qDebug() << "Error:" << reply->errorString();
@@ -158,7 +159,7 @@ void WhatsAppJacket::getLastMessageAsync()
 		isBusy = false;
 
 		// Самовызов через 5 секунд
-		QTimer::singleShot(5000, this, &WhatsAppJacket::getLastMessageAsync);
+		QTimer::singleShot(3000, this, &WhatsAppJacket::getLastMessageAsync);
 		});
 }
 
