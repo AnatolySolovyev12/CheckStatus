@@ -130,7 +130,7 @@
     </column>
     <column>
      <property name="text">
-      <string>Update (sec)</string>
+      <string>Update (msec)</string>
      </property>
     </column>
     <column>
