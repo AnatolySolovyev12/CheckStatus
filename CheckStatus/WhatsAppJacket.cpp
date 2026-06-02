@@ -16,7 +16,8 @@ WhatsAppJacket::WhatsAppJacket(QObject* parent)
 
 void WhatsAppJacket::sendMessage(const QString message)
 {
-	if (message.isEmpty()) {
+	if (message.isEmpty()) 
+	{
 		qWarning() << "Attempt to send empty message";
 		return;
 	}
@@ -51,9 +52,8 @@ void WhatsAppJacket::sendMessage(const QString message)
 			qDebug() << response;
 		}
 		else
-		{
 			qDebug() << "Error:: " << reply->error();
-		}
+		
 		reply->deleteLater();
 		});
 }
@@ -62,6 +62,8 @@ void WhatsAppJacket::sendMessage(const QString message)
 
 void WhatsAppJacket::getTokenFromFile()
 {
+	//Берем за основу любой метод из API GreenAPI в котором фигурирует номер инстанса и токен
+
 	QFile file(QCoreApplication::applicationDirPath() + "\\token.txt");
 
 	if (!file.open(QIODevice::ReadOnly))
@@ -77,11 +79,14 @@ void WhatsAppJacket::getTokenFromFile()
 	if (myLine == "")
 	{
 		qDebug() << "Don't find browse file. Add a directory with a token (token.txt).";
+
 		file.close();
 		return;
 	}
 
 	file.close();
+
+	// Через регулярку получаем сначала номер инстанса
 
 	QRegularExpression strPattern(QString(R"(waInstance([0-9]*))"));
 
@@ -89,26 +94,25 @@ void WhatsAppJacket::getTokenFromFile()
 
 	if (matchReg.hasMatch())
 	{
-		instanceNumber = matchReg.captured().replace("waInstance", "");
+		instanceNumber = matchReg.captured().replace("waInstance", ""); // избавляемся от приставки заменяя её на пустоту
 		qDebug() << "instanceNumber = " + instanceNumber;
 	}
 	else
 		qDebug() << "No matches in RegEx for waInstance";
 
-	strPattern.setPattern(QString(R"(waInstance%1/[\w]+/([\w]+))").arg(instanceNumber));
+	// Полученный номер инстанса добавляем к паттерну и ищем совпадения для токена которым завершается любой метод из API
+
+	strPattern.setPattern(QString(R"(waInstance%1/[\w]+/([\w]+))").arg(instanceNumber)); // группируем токен в отдельную группу в круглых скобках чтобы в дальнейшем извлечь через индекс
 
 	matchReg = strPattern.match(myLine);
 
 	if (matchReg.hasMatch())
 	{
-		// Важно: берем captured(1), чтобы получить текст из первой круглой скобки!
-		tokenFromInstance = matchReg.captured(1);
+		tokenFromInstance = matchReg.captured(1); // извлекаем индексированную первую скобку в паттерне. (0) или () извлекает всё совпадение. (1) - то что было опоясано в паттерне круглыми скобками
 		qDebug() << "tokenFromInstance = " + tokenFromInstance;
 	}
 	else
-	{
 		qDebug() << "No matches in RegEx for tokenFromInstance";
-	}
 
 	return;
 }
@@ -146,7 +150,9 @@ QString WhatsAppJacket::getChatIdFromFile()
 void WhatsAppJacket::getLastMessageAsync()
 {
 	if (isBusy) return;
+
 	isBusy = true;
+
 	QString urlStringTemp = QString(R"(https://3100.api.green-api.com/waInstance%1/receiveNotification/%2)")
 		.arg(instanceNumber)
 		.arg(tokenFromInstance);
@@ -159,6 +165,7 @@ void WhatsAppJacket::getLastMessageAsync()
 	QNetworkReply* reply = manager->get(request);
 
 	QObject::connect(reply, &QNetworkReply::finished, [this, reply]() {
+
 		if (reply->error() == QNetworkReply::NoError)
 		{
 			QByteArray responseData = reply->readAll();
@@ -195,7 +202,7 @@ void WhatsAppJacket::getLastMessageAsync()
 		reply->deleteLater();
 		isBusy = false;
 
-		// Самовызов через 5 секунд
+		// Самовызов через 3 секунды
 		QTimer::singleShot(3000, this, &WhatsAppJacket::getLastMessageAsync);
 		});
 }
