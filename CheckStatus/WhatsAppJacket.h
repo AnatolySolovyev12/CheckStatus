@@ -14,7 +14,7 @@
 #include <windows.h>
 #include <QFile.h>
 #include <iostream>
-
+#include <QRegularExpression>
 
 class WhatsAppJacket : public QObject
 {
@@ -22,7 +22,7 @@ class WhatsAppJacket : public QObject
 
 public:
 	WhatsAppJacket(QObject* parent = nullptr);
-	QString getTokenFromFile();
+	void getTokenFromFile();
 	QString getChatIdFromFile();
 	void getLastMessageAsync();
 	void deleteNotification(QString idNotification);
@@ -38,5 +38,7 @@ private:
 	QNetworkAccessManager* manager = nullptr;
 	QString chatId = "";
 	QString urlString = "";
+	QString instanceNumber = "";
+	QString tokenFromInstance = "";
 	bool isBusy = false;
 };

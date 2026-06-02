@@ -4,12 +4,12 @@ WhatsAppJacket::WhatsAppJacket(QObject* parent)
 	: QObject(parent), manager(new QNetworkAccessManager)
 {
 	AttachConsole(ATTACH_PARENT_PROCESS);
-	urlString = QString(getTokenFromFile());
+	getTokenFromFile();
 	chatId = getChatIdFromFile();
 
 	connect(this, &WhatsAppJacket::sendIdNotificationForDelete, this, &WhatsAppJacket::deleteNotification);
 
-	QTimer::singleShot(2000, [this]() { getLastMessageAsync(); });
+	//QTimer::singleShot(2000, [this]() { getLastMessageAsync(); });
 }
 
 
@@ -21,7 +21,11 @@ void WhatsAppJacket::sendMessage(const QString message)
 		return;
 	}
 
-	QUrl url(urlString);
+	QString urlStringTemp = QString(R"(https://3100.api.green-api.com/waInstance%1/sendMessage/%2)")
+		.arg(instanceNumber)
+		.arg(tokenFromInstance);
+
+	QUrl url(urlStringTemp);
 
 	QJsonObject json;
 	json["chatId"] = chatId;
@@ -56,14 +60,14 @@ void WhatsAppJacket::sendMessage(const QString message)
 
 
 
-QString WhatsAppJacket::getTokenFromFile()
+void WhatsAppJacket::getTokenFromFile()
 {
 	QFile file(QCoreApplication::applicationDirPath() + "\\token.txt");
 
 	if (!file.open(QIODevice::ReadOnly))
 	{
 		qDebug() << "Don't find browse file. Add a directory with a token (token.txt).";
-		return 0;
+		return;
 	}
 
 	QTextStream out(&file);
@@ -74,12 +78,39 @@ QString WhatsAppJacket::getTokenFromFile()
 	{
 		qDebug() << "Don't find browse file. Add a directory with a token (token.txt).";
 		file.close();
-		return 0;
+		return;
 	}
 
 	file.close();
 
-	return myLine;
+	QRegularExpression strPattern(QString(R"(waInstance([0-9]*))"));
+
+	QRegularExpressionMatch matchReg = strPattern.match(myLine);
+
+	if (matchReg.hasMatch())
+	{
+		instanceNumber = matchReg.captured().replace("waInstance", "");
+		qDebug() << "instanceNumber = " + instanceNumber;
+	}
+	else
+		qDebug() << "No matches in RegEx for waInstance";
+
+	strPattern.setPattern(QString(R"(waInstance%1/[\w]+/([\w]+))").arg(instanceNumber));
+
+	matchReg = strPattern.match(myLine);
+
+	if (matchReg.hasMatch())
+	{
+		// Важно: берем captured(1), чтобы получить текст из первой круглой скобки!
+		tokenFromInstance = matchReg.captured(1);
+		qDebug() << "tokenFromInstance = " + tokenFromInstance;
+	}
+	else
+	{
+		qDebug() << "No matches in RegEx for tokenFromInstance";
+	}
+
+	return;
 }
 
 
@@ -116,7 +147,9 @@ void WhatsAppJacket::getLastMessageAsync()
 {
 	if (isBusy) return;
 	isBusy = true;
-	QString urlStringTemp = QString("https://3100.api.green-api.com/waInstance3100514553/receiveNotification/134edc19c6c64e4f971e4578b787f54725492643c588466095");
+	QString urlStringTemp = QString(R"(https://3100.api.green-api.com/waInstance%1/receiveNotification/%2)")
+		.arg(instanceNumber)
+		.arg(tokenFromInstance);
 
 	QUrl url(urlStringTemp);
 
@@ -171,7 +204,9 @@ void WhatsAppJacket::getLastMessageAsync()
 
 void WhatsAppJacket::deleteNotification(QString idNotification)
 {
-	QString urlStringTemp = QString("https://3100.api.green-api.com/waInstance3100514553/deleteNotification/134edc19c6c64e4f971e4578b787f54725492643c588466095/");
+	QString urlStringTemp = QString(R"(https://3100.api.green-api.com/waInstance3100514553/deleteNotification/%2)")
+		.arg(instanceNumber)
+		.arg(tokenFromInstance);
 
 	urlStringTemp += idNotification;
 
