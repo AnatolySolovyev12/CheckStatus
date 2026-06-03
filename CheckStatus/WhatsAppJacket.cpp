@@ -22,6 +22,12 @@ void WhatsAppJacket::sendMessage(const QString message)
 		return;
 	}
 
+	if (instanceNumber.isEmpty() || tokenFromInstance.isEmpty())
+	{
+		qWarning() << "Token or Instance is empty. Restart APP with correct parameters for send messege";
+		return;
+	}
+
 	QString urlStringTemp = QString(R"(https://3100.api.green-api.com/waInstance%1/sendMessage/%2)")
 		.arg(instanceNumber)
 		.arg(tokenFromInstance);

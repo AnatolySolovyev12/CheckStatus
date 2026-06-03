@@ -38,7 +38,7 @@ CheckStatus::CheckStatus(QWidget* parent)
 	QMainWindow::setStatusBar(sBar);
 
 	startingImportXml();
-	initializationPoolFunc(); 
+	initializationPoolFunc();
 }
 
 
@@ -67,18 +67,20 @@ void CheckStatus::addItemInList()
 
 	any->setText(0, "new");
 	any->setText(2, QString::number(10000));
+	any->setText(5, "new");
 
 	any->setBackground(0, QColor(221, 221, 221, 255));
 	any->setBackground(1, QColor(245, 216, 183, 255));
 	any->setBackground(2, QColor(217, 225, 187, 255));
 	any->setCheckState(3, any->checkState(3));
 	any->setCheckState(4, any->checkState(4));
+	any->setBackground(5, QColor(221, 221, 221, 255));
 
 	offChanger = false;
 
 	poolParse.append(QSharedPointer<ProcessObject>::create());
-	//poolParse.push_back(QSharedPointer<uniqueParseObject>(new uniqueParseObject));
-	poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(0), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(1), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(2), ui.treeWidget->topLevelItem(poolParse.length() - 1)->checkState(3), ui.treeWidget->topLevelItem(poolParse.length() - 1)->checkState(4));
+
+	poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(0), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(1), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(2), ui.treeWidget->topLevelItem(poolParse.length() - 1)->checkState(3), ui.treeWidget->topLevelItem(poolParse.length() - 1)->checkState(4), ui.treeWidget->topLevelItem(poolParse.length() - 1)->text(5));
 
 	connect(poolParse.last().data(), &ProcessObject::messageReceived, tgObject, &WhatsAppJacket::sendMessage);
 
@@ -117,8 +119,24 @@ void CheckStatus::closeEditor(QTreeWidgetItem* any) // слот закрытия
 {
 	if (offChanger) return; // препятствуем многократному исполнению этой функции при изменении цветов
 
-	QString temporary = any->text(2).trimmed(); // убираем пробелы
+	QString temporary = any->text(0).trimmed(); // убираем пробелы
+	any->setText(0, temporary);
+
+	temporary = any->text(1).trimmed(); // убираем пробелы
+	any->setText(1, temporary);
+
+	temporary = any->text(2).trimmed(); // убираем пробелы
 	any->setText(2, temporary);
+
+	// Избавляемся от скрытых символов в директории при копировании пути откуда либо
+
+	QString directory = any->text(5);
+	directory = directory.remove(QChar(0x202A))
+		.remove(QChar(0x202B))
+		.remove(QChar(0xFEFF))
+		.trimmed();
+
+	any->setText(5, directory);
 
 	offChanger = true;
 
@@ -136,7 +154,13 @@ void CheckStatus::closeEditor(QTreeWidgetItem* any) // слот закрытия
 	}
 	else
 	{
-		any->setBackground(3, QColor(128, 243, 150, 255));
+		if (any->text(5).length() >= 1)
+			any->setBackground(3, QColor(128, 243, 150, 255));
+		else
+		{
+			any->setCheckState(3, Qt::Unchecked);
+			sBar->showMessage("Add text in CheckApp", 10000);
+		}
 	}
 
 	if (any->checkState(4) == Qt::Unchecked) // красим если что-то написано в серийнике
@@ -164,8 +188,24 @@ void CheckStatus::otherItemWasChecked(QTreeWidgetItem* any) // закрывае�
 	if (any == middleItem && column == middleColumn)
 		return;
 
-	QString temporary = any->text(2).trimmed();
+	QString temporary = any->text(0).trimmed(); // убираем пробелы
+	any->setText(0, temporary);
+
+	temporary = any->text(1).trimmed(); // убираем пробелы
+	any->setText(1, temporary);
+
+	temporary = any->text(2).trimmed(); // убираем пробелы
 	any->setText(2, temporary);
+
+	// Избавляемся от скрытых символов в директории при копировании пути откуда либо
+
+	QString directory = any->text(5); 
+	directory = directory.remove(QChar(0x202A))
+		.remove(QChar(0x202B))
+		.remove(QChar(0xFEFF))
+		.trimmed();
+
+	any->setText(5, directory);
 
 	ui.treeWidget->closePersistentEditor(middleItem, middleColumn);
 	middleItem = nullptr;
@@ -232,6 +272,8 @@ void CheckStatus::recursionXmlWriter(QTreeWidgetItem* some, QXmlStreamWriter& so
 				someXmlWriter.writeAttribute("Send", "1");
 		}
 
+		someXmlWriter.writeAttribute("CheckApp", some->text(5));
+
 		int count = some->childCount();
 
 		for (int x = 0; x < count; x++)
@@ -263,6 +305,8 @@ void CheckStatus::recursionXmlWriter(QTreeWidgetItem* some, QXmlStreamWriter& so
 			else
 				someXmlWriter.writeAttribute("Send", "1");
 		}
+
+		someXmlWriter.writeAttribute("CheckApp", some->text(5));
 
 		someXmlWriter.writeEndElement();
 
@@ -342,8 +386,10 @@ void CheckStatus::loopXmlReader(QXmlStreamReader& xmlReader)
 			some->setBackground(0, QColor(221, 221, 221, 255));
 			some->setBackground(1, QColor(245, 216, 183, 255));
 			some->setBackground(2, QColor(217, 225, 187, 255));
+			some->setBackground(5, QColor(221, 221, 221, 255));
 
 			some->setText(0, xmlReader.name().toString());
+			some->setText(5, xmlReader.name().toString());
 
 			for (QXmlStreamAttribute& val : xmlReader.attributes())
 			{
@@ -368,6 +414,8 @@ void CheckStatus::loopXmlReader(QXmlStreamReader& xmlReader)
 					else
 						some->setCheckState(4, Qt::Unchecked);
 				}
+
+				if (val.name().toString() == "CheckApp") some->setText(5, val.value().toString());
 			}
 
 			offChanger = false;
@@ -449,7 +497,7 @@ void CheckStatus::initializationPoolFunc()
 
 		poolParse.append(QSharedPointer<ProcessObject>::create());
 
-		poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(count)->text(0), ui.treeWidget->topLevelItem(count)->text(1), ui.treeWidget->topLevelItem(count)->text(2), ui.treeWidget->topLevelItem(count)->checkState(3), ui.treeWidget->topLevelItem(count)->checkState(4));
+		poolParse.last().data()->setParam(ui.treeWidget->topLevelItem(count)->text(0), ui.treeWidget->topLevelItem(count)->text(1), ui.treeWidget->topLevelItem(count)->text(2), ui.treeWidget->topLevelItem(count)->checkState(3), ui.treeWidget->topLevelItem(count)->checkState(4), ui.treeWidget->topLevelItem(count)->text(5));
 
 		connect(poolParse.last().data(), &ProcessObject::messageReceived, tgObject, &WhatsAppJacket::sendMessage);
 	}

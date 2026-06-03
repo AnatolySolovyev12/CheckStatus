@@ -120,12 +120,12 @@
     </property>
     <column>
      <property name="text">
-      <string>Name (.exe)</string>
+      <string>RestartApp (.exe)</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Directory</string>
+      <string>Directory RestartApp</string>
      </property>
     </column>
     <column>
@@ -141,6 +141,11 @@
     <column>
      <property name="text">
       <string>Send messege</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>CheckApp (.exe)</string>
      </property>
     </column>
    </widget>

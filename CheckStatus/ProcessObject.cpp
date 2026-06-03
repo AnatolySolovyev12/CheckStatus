@@ -10,7 +10,7 @@ ProcessObject::ProcessObject(QObject* parent)
 }
 
 
-void ProcessObject::setParam(QString name, QString URL, QString updateSecond, bool checkParse, bool checkSend)
+void ProcessObject::setParam(QString name, QString URL, QString updateSecond, bool checkParse, bool checkSend, QString checkAppName)
 {
 	m_name = name;
 	m_URL = URL;
@@ -22,6 +22,8 @@ void ProcessObject::setParam(QString name, QString URL, QString updateSecond, bo
 		classTimer->start(m_updateSecond.toInt()); // Каждые три секунды
 	else
 		classTimer->stop();
+
+	m_checkApp = checkAppName;
 }
 
 
@@ -54,22 +56,22 @@ void ProcessObject::check()
 
 	while (Process32Next(hSnapshot, &pe)) // false в случае отсутствия отсутствия модулей процесса т.е. дошли до конца или вообще snapshot пустой
 	{
-		if (QString::fromWCharArray(pe.szExeFile) == m_name)
+		if (QString::fromWCharArray(pe.szExeFile) == m_checkApp)
 		{
-			qDebug() << QDateTime::currentDateTime() << ": " << m_name << "OK";
+			qDebug() << QDateTime::currentDateTime() << ": " << m_checkApp << "OK";
 			return;
 		}
 	}
 
-	qDebug() << QDateTime::currentDateTime() << ": " << m_name << " NOT WORK";
+	qDebug() << QDateTime::currentDateTime() << ": " << m_checkApp << " NOT WORK";
 
 	if (m_checkSend)
-		emit messageReceived("Не работает " + m_name);
+		emit messageReceived("Не работает " + m_checkApp);
 
 	historyOfObject += QDateTime::currentDateTime().toString() + '\n';
 
 	QString temporary = getStartString(m_URL);
-
+	qDebug() << temporary.toUtf8().constData();
 	if (m_checkParse)
 		QTimer::singleShot(5000, [temporary]() {
 
@@ -79,22 +81,21 @@ void ProcessObject::check()
 }
 
 
+
 QString ProcessObject::getStartString(QString any)
 {
-	QString temporary = "start \"\" \""; // start - для того чтобы system() не блокировала выполнение запускающей программы.
+	QString temporary = "cd /d \"" + any + "\" && start \"\" \"";
+	// start - для того чтобы system() не блокировала выполнение запускающей программы.
 	//Параметр "" используется для указания заголовка окна (можно оставить пустым).
+	// /d - позволяет не только сменить директорию н ои диск.
 
-	for (auto& val : any)
-	{
-		if (val == '\\')
-		{
-			temporary += "\\";
-			continue;
-		};
-		temporary += val;
-	}
+	// Если не сделать предварительный переход то приложение при запуске будет искать свои конфигурации по пути этого приложения а не своего.
 
-	temporary += "\\";
+	if (!any.endsWith("\\"))
+		temporary += any + "\\";
+	else
+		temporary += any;
+
 	temporary += m_name + "\"";
 
 	return temporary;
@@ -111,5 +112,5 @@ QString ProcessObject::getHistoryObject()
 
 QString ProcessObject::getNameObject()
 {
-	return m_name;
+	return m_checkApp;
 }

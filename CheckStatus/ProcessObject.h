@@ -16,7 +16,7 @@ class ProcessObject : public QObject
 public:
 	ProcessObject(QObject* parent = nullptr);
 
-	void setParam(QString name, QString URL, QString updateSecond, bool checkParse, bool checkSend);
+	void setParam(QString name, QString URL, QString updateSecond, bool checkParse, bool checkSend, QString checkAppName);
 	void check();
 	QString getStartString(QString any);
 	QString getHistoryObject();
@@ -34,6 +34,7 @@ private:
 	QString m_updateSecond;
 	bool m_checkParse = false;
 	bool m_checkSend = false;
+	QString m_checkApp;
 	QTimer* classTimer = nullptr;
 	QString historyOfObject;
 };
