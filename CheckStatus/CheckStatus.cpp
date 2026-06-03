@@ -183,7 +183,6 @@ void CheckStatus::otherItemWasChecked(QTreeWidgetItem* any) // закрывае�
 	if (offChanger) return;
 
 	int column = ui.treeWidget->currentColumn();
-	//qDebug() << "Checked " << any->text(column) << ui.treeWidget->indexOfTopLevelItem(ui.treeWidget->currentItem()) << "Size PoolParse " << poolParse.length();/////////////////////////
 
 	if (any == middleItem && column == middleColumn)
 		return;
@@ -339,7 +338,6 @@ void CheckStatus::importXml()
 
 	if (!(txtFile.open(QIODevice::WriteOnly | QIODevice::Truncate))) // Truncate - для очистки содержимого файла
 	{
-		// qDebug() << "Don't find browse file. Add a directory with a tree.";
 		sBar->showMessage("Don't find browse file. Add a directory with a tree.", 10000);
 		return;
 	}
