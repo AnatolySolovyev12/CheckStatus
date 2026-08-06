@@ -2,20 +2,16 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_CheckStatus.h"
-
 #include <ProcessObject.h>
 #include "WhatsAppJacket.h"
-
 #include <QFileDialog>
 #include <QFile>
 #include <QXmlStreamWriter>
 #include <QXmlStreamAttribute>
 #include <QMouseEvent>
-
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <QAction>
-
 #include <windows.h>
 
 class CheckStatus : public QMainWindow
@@ -64,7 +60,6 @@ private:
     WhatsAppJacket* tgObject = nullptr;
 
     int countOfTopItems;
-
 
     QSystemTrayIcon* trayIcon = nullptr;
     QDateTime fullTimeWork;
