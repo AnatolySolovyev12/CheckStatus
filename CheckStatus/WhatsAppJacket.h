@@ -43,8 +43,4 @@ private:
 	QString instanceNumber = "";
 	QString tokenFromInstance = "";
 	bool isBusy = false;
-
-
-
-	QString urlFile;
 };
