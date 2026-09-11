@@ -16,6 +16,8 @@
 #include <iostream>
 #include <QRegularExpression>
 
+
+
 class WhatsAppJacket : public QObject
 {
 	Q_OBJECT
@@ -41,4 +43,8 @@ private:
 	QString instanceNumber = "";
 	QString tokenFromInstance = "";
 	bool isBusy = false;
+
+
+
+	QString urlFile;
 };
